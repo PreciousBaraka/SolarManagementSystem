@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  ADMIN
+  MANAGER
+  INSTALLER
+  INVENTORY_OFFICER
+}
+
+enum installationStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum UsageType {
+  SALE
+  INSTALLATION
+}
+
+model User {
+  id          String   @id @default(uuid())
+  fullName    String
+  email       String   @unique
+  password    String
+  phoneNumber String
+  userType    UserType @default(INVENTORY_OFFICER)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  stockOuts     StockOut[]
+  installations InstallationSite[]
+
+  @@index([id])
+  @@map("users")
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  name       String
+  categoryId String
+  supplierId String?
+  unit       Int // e.g. pcs, meters
+  unitPrice  Float
+  quantity   Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  stockIn       StockIn[]
+  stockOut      StockOut[]
+  installations InstallationSite[]
+  category      Category           @relation(fields: [categoryId], references: [id])
+  supplier      Supplier?          @relation(fields: [supplierId], references: [id])
+
+  @@index([id])
+  @@map("products")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  products  Product[]
+
+  @@index([id])
+  @@map("categories")
+}
+
+model Supplier {
+  id          String   @id @default(uuid())
+  name        String
+  phoneNumber String?
+  createdAt   DateTime @default(now())
+
+  stockIn  StockIn[]
+  products Product[]
+
+  @@index([id])
+  @@map("suppliers")
+}
+
+model StockIn {
+  id         String   @id @default(uuid())
+  productId  String
+  supplierId String
+  quantity   Int
+  dateIn     DateTime @default(now())
+
+  product  Product  @relation(fields: [productId], references: [id])
+  supplier Supplier @relation(fields: [supplierId], references: [id])
+
+  @@index([id])
+  @@map("stock_in")
+}
+
+model StockOut {
+  id          String    @id @default(uuid())
+  productId   String
+  quantity    Int
+  price       Float
+  usageType   UsageType @default(SALE)
+  destination String?
+  dateOut     DateTime  @default(now())
+  installerId String?
+  customerId  String?
+
+  customer  Customer? @relation(fields: [customerId], references: [id])
+  installer User?     @relation(fields: [installerId], references: [id])
+  product   Product   @relation(fields: [productId], references: [id])
+
+  @@index([id])
+  @@map("stock_out")
+}
+
+model Customer {
+  id          String   @id @default(uuid())
+  name        String
+  phoneNumber String?
+  location    String?
+  createdAt   DateTime @default(now())
+
+  purchases     StockOut[]
+  installations InstallationSite[]
+
+  @@index([id])
+  @@map("customers")
+}
+
+model InstallationSite {
+  id            String             @id @default(uuid())
+  location      String
+  productId     String
+  quantity      Int
+  installerId   String
+  customerId    String
+  status        installationStatus @default(PENDING)
+  dateInstalled DateTime           @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id])
+  installer User     @relation(fields: [installerId], references: [id])
+  customer  Customer @relation(fields: [customerId], references: [id])
+
+  @@index([id])
+  @@map("installation_sites")
+}
