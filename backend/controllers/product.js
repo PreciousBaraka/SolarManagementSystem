@@ -8,7 +8,7 @@ export const createProduct = async (req, res) => {
       return res.status(400).json({ message: error.details[0].message });
     }
     const { name, unit, unitPrice, quantity } = value;
-    const existingProduct = await prisma.product.findUnique({
+    const existingProduct = await prisma.product.findFirst({
       where: { name },
     });
     if (existingProduct) {

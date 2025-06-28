@@ -20,7 +20,7 @@ CREATE TABLE `products` (
     `name` VARCHAR(191) NOT NULL,
     `categoryId` VARCHAR(191) NOT NULL,
     `supplierId` VARCHAR(191) NULL,
-    `unit` INTEGER NOT NULL,
+    `unit` VARCHAR(191) NOT NULL,
     `unitPrice` DOUBLE NOT NULL,
     `quantity` INTEGER NOT NULL DEFAULT 0,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
