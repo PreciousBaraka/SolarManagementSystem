@@ -6,6 +6,7 @@ export const productSchema = Joi.object({
     unit:Joi.string().min(3).required(),
     unitPrice: Joi.number().integer().positive().min(0).required(),
     quantity:Joi.number().min(0).required(),
+    categoryId: Joi.string().required(),
 });
 
 // Product schema for updating
@@ -14,4 +15,5 @@ export const updateProductSchema = Joi.object({
   unit: Joi.string().min(3),
   unitPrice: Joi.number().integer().positive().min(0),
   quantity: Joi.number().min(0),
+  categoryId: Joi.string(),
 });
