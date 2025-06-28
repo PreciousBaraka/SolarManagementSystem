@@ -12,6 +12,8 @@ enum UserType {
   MANAGER
   INSTALLER
   INVENTORY_OFFICER
+  CUSTOMER
+  SALES_PERSON
 }
 
 enum installationStatus {
@@ -31,12 +33,14 @@ model User {
   email       String   @unique
   password    String
   phoneNumber String
-  userType    UserType @default(INVENTORY_OFFICER)
+  userType    UserType @default(CUSTOMER)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
 
   stockOuts     StockOut[]
   installations InstallationSite[]
+  purchases     Sales[]
+  sales         Sales[]            @relation("SalesPerson")
 
   @@index([id])
   @@map("users")
@@ -57,6 +61,7 @@ model Product {
   installations InstallationSite[]
   category      Category           @relation(fields: [categoryId], references: [id])
   supplier      Supplier?          @relation(fields: [supplierId], references: [id])
+  productSales  SalesProduct[]
 
   @@index([id])
   @@map("products")
@@ -108,28 +113,12 @@ model StockOut {
   destination String?
   dateOut     DateTime  @default(now())
   installerId String?
-  customerId  String?
 
-  customer  Customer? @relation(fields: [customerId], references: [id])
-  installer User?     @relation(fields: [installerId], references: [id])
-  product   Product   @relation(fields: [productId], references: [id])
+  installer User?   @relation(fields: [installerId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 
   @@index([id])
   @@map("stock_out")
-}
-
-model Customer {
-  id          String   @id @default(uuid())
-  name        String
-  phoneNumber String?
-  location    String?
-  createdAt   DateTime @default(now())
-
-  purchases     StockOut[]
-  installations InstallationSite[]
-
-  @@index([id])
-  @@map("customers")
 }
 
 model InstallationSite {
@@ -137,15 +126,48 @@ model InstallationSite {
   location      String
   productId     String
   quantity      Int
-  installerId   String
   customerId    String
   status        installationStatus @default(PENDING)
   dateInstalled DateTime           @default(now())
 
-  product   Product  @relation(fields: [productId], references: [id])
-  installer User     @relation(fields: [installerId], references: [id])
-  customer  Customer @relation(fields: [customerId], references: [id])
+  product  Product @relation(fields: [productId], references: [id])
+  customer User    @relation(fields: [customerId], references: [id])
 
   @@index([id])
   @@map("installation_sites")
+}
+
+model Sales {
+  id                  String   @id @default(uuid())
+  customerId          String?
+  customerName        String?
+  customerPhoneNumber String?
+  salesPersonId       String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  salesProducts SalesProduct[]
+  customer      User?          @relation(fields: [customerId], references: [id])
+  salesPerson   User           @relation(fields: [salesPersonId], references: [id], name: "SalesPerson")
+
+  @@index([id])
+  @@map("sales")
+}
+
+model SalesProduct {
+  id         String @id @default(uuid())
+  salesId    String
+  productId  String
+  quantity   Int
+  price      Float
+  totalPrice Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sales   Sales   @relation(fields: [salesId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@index([id])
+  @@map("sales_products")
 }

@@ -150,7 +150,7 @@ export const deleteProduct = async (req, res) =>{
     await prisma.product.delete({
       where: { id },
     });
-    res.status(200).json({ message: "Product deleted successfully" });
+    res.status(204).json({ message: "Product deleted successfully" });
   } catch (error) {
     console.log("Error deleting product:", error);
     return res

@@ -8,7 +8,14 @@ export const registerUser = async (req, res) => {
   const { userType } = req.query;
 
   if (
-    !["installer", "manager", "admin", "inventory_officer"].includes(userType)
+    ![
+      "installer",
+      "manager",
+      "admin",
+      "inventory_officer",
+      "sales_person",
+      "customer",
+    ].includes(userType)
   ) {
     return res.status(400).json({ message: "Invalid user type" });
   }
@@ -39,6 +46,10 @@ export const registerUser = async (req, res) => {
             ? UserType.MANAGER
             : userType === "admin"
             ? UserType.ADMIN
+            : userType === "customer"
+            ? UserType.CUSTOMER
+            : userType === "sales_person"
+            ? UserType.SALES_PERSON
             : userType === "inventory_officer" && UserType.INVENTORY_OFFICER,
       },
     });
@@ -122,7 +133,7 @@ export const getUserById = async (req, res) => {
       where: { id },
       include: {
         installations: true,
-        stockOuts: true, 
+        stockOuts: true,
       },
     });
     if (!user) {
@@ -205,4 +216,4 @@ export const changeUserActiveStatus = async (req, res) => {
       .status(500)
       .json({ message: "Server error", error: err.message });
   }
-}
+};
