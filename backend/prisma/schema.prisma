@@ -47,7 +47,7 @@ model Product {
   name       String
   categoryId String
   supplierId String?
-  unit       Int // e.g. pcs, meters
+  unit       String// e.g. pcs, meters
   unitPrice  Float
   quantity   Int      @default(0)
   createdAt  DateTime @default(now())

@@ -179,3 +179,30 @@ export const updateUser = async (req, res) => {
       .json({ message: "Server error", error: err.message });
   }
 };
+
+export const changeUserActiveStatus = async (req, res) => {
+  const { id } = req.params;
+  const { isActive } = req.body;
+
+  try {
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { isActive },
+    });
+
+    return res.status(200).json(updatedUser);
+  } catch (err) {
+    console.log("Error changing user status:", err);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: err.message });
+  }
+}
