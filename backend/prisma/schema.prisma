@@ -14,6 +14,7 @@ enum UserType {
   INVENTORY_OFFICER
   CUSTOMER
   SALES_PERSON
+  SUPPLIER
 }
 
 enum installationStatus {
@@ -22,7 +23,7 @@ enum installationStatus {
   CANCELLED
 }
 
-enum UsageType {
+enum UsageType {|
   SALE
   INSTALLATION
 }
