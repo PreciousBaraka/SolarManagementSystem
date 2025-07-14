@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-primary: #FFA726;    /* Solar Orange */
+  --color-secondary: #66BB6A;  /* Eco Green */
+  --color-neutral: #455A64;    /* Charcoal Gray */
+  --color-base-100: #ffffff;   /* White background (optional) */
+}
